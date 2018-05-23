@@ -4,14 +4,26 @@ import datetime
 import os
 
 def preprocessKML(kmlObject):
+
+    # Create our parsing object.
     soup = BeautifulSoup(kmlObject, 'html.parser')
+
+    # Parse all entries with description tag.
     descEntries = soup.find_all('description')
+
+    # Remove the tag and save as a temporary HTML file to parse later.
+    # This is a caveat with how the file stores HTML within XML, meaning parsing has to be a two-stage process.
     tempFile = open('temp.html', 'w')
     for i in descEntries:
+        # Split string into lines.
         temp = str(i).splitlines()
+        # Remove first and last line.
         temp2 = temp[1:-1]
+        # Rejoin into string.
         temp3 = ''.join(temp2)
+        # Save to file.
         tempFile.write(temp3)
+    # Close file when done writing.
     tempFile.close()
 
 def createCSV(columnFields, filenamePath, save=True):
