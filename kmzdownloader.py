@@ -9,7 +9,7 @@ import wget
 import os
 import datetime
 
-def kmzDownload():
+def kmzDownload(currentProvince):
     '''
     Code that will download KMZ file from specified website if not present already.
     :return filenamePath - the filename path used for the download:
@@ -28,12 +28,13 @@ def kmzDownload():
     else:
         print 'Unknown error.'
 
-    # Define our download URL.
-    url = 'http://sigmine.dnpm.gov.br/sirgas2000/PR.kmz'
+    # Define our download URL for the current province.
+    provinceFile = currentProvince + '.kmz'
+    url = 'http://sigmine.dnpm.gov.br/sirgas2000/' + provinceFile
 
     # Define our filename and full path.
     currentDate = datetime.datetime.now()
-    filename = generateFilename(currentDate, 'PR.kmz')
+    filename = generateFilename(currentDate, provinceFile)
     filenamePath = os.path.join(dataDirectory, filename)
 
     # Check to see if file present, and download if not.

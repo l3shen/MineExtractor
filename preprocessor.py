@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import datetime
 import os
+import csv
 
 def preprocessKML(kmlObject):
 
@@ -26,11 +27,14 @@ def preprocessKML(kmlObject):
     # Close file when done writing.
     tempFile.close()
 
-def createCSV(columnFields, filenamePath, save=True):
+def createData(columnFields, filenamePath, province, save=True):
 
     # Set directory for downloaded data.
     cwd = os.getcwd()
     currentDate = datetime.datetime.now()
+
+    # Now load our newly formatted HTML in after setting root directory..
+    htmlData = open('temp.html', 'r')
 
     # Pull current date.
     day = str(currentDate.day)
@@ -46,22 +50,18 @@ def createCSV(columnFields, filenamePath, save=True):
     datetimeString = year + '-' + month + '-' + day
 
     # Set directory and create if it doesn't exist.
-    dataDirectoryRoot = os.path.join(cwd,datetimeString)
+    dataDirectoryRoot = os.path.join(cwd, 'data', datetimeString, province)
 
     # Create our filename.
     removedExtension = filenamePath[:-4]
-    print removedExtension
     dataName = datetimeString + '-' + removedExtension[-2:] + '.csv'
     dataFilePath = os.path.join(dataDirectoryRoot, dataName)
 
     if os.path.isdir(dataDirectoryRoot) == False:
-        os.mkdir(dataDirectoryRoot)
+        os.makedirs(dataDirectoryRoot)
     else:
         # Change directory.
         os.chdir(dataDirectoryRoot)
-
-    # Now load our newly formatted HTML in.
-    htmlData = open('temp.html', 'r')
 
     htmlSoup = BeautifulSoup(htmlData, 'html.parser')  # WORKS!!!!
     bodyEntries = htmlSoup.find_all('body')
@@ -94,7 +94,15 @@ def createCSV(columnFields, filenamePath, save=True):
     htmlData.close()
 
     # Delete the HTML file after completing everything as it is temporary.
+    os.chdir(cwd)
     os.remove('temp.html')
 
     # Return dataframe.
     return dataFrame
+
+def importProvinces(filename):
+    with open(filename, 'r') as CSVfile:
+        reader = csv.reader(CSVfile)
+        provinceList = list(reader)[0]
+
+    return provinceList
